@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biathlon Combine Connect V2</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    :root, [data-theme="light"] {
+      --bg:#f7f6f2; --surface:#ffffff; --surface-2:#f3efe7; --surface-3:#ebe5da; --border:rgba(37,34,28,.12);
+      --text:#26231d; --muted:#6d685e; --inverse:#fcfbf8; --primary:#046b72; --primary-2:#0a5258; --accent:#d87508;
+      --success:#4f7f2d; --error:#a13b4d; --info:#0b6793; --shadow:0 10px 30px rgba(33,32,29,.08);
+      --radius:18px; --radius-sm:12px; --max:1200px; --font:'Satoshi','Inter',sans-serif;
+    }
+    [data-theme="dark"] {
+      --bg:#171512; --surface:#1d1b18; --surface-2:#24211d; --surface-3:#2b2722; --border:rgba(255,255,255,.12);
+      --text:#e9e3d8; --muted:#b6ae9f; --inverse:#181715; --primary:#62b6bd; --primary-2:#7ad0d7; --accent:#ffb35f;
+      --success:#8ac564; --error:#de7588; --info:#74b1e0; --shadow:0 10px 30px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:none;text-size-adjust:none;scroll-behavior:smooth}
+    body{margin:0;font-family:var(--font);background:linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--bg) 86%, black 4%));color:var(--text)}
+    button,input,select{font:inherit}
+    button{cursor:pointer;border:0;transition:transform .18s ease,background .18s ease,color .18s ease,border-color .18s ease}
+    button:hover{transform:translateY(-1px)}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    input,select{width:100%;padding:.9rem .95rem;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:12px;outline:none}
+    input:focus,select:focus,button:focus-visible{box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 18%, transparent)}
+    .shell{max-width:var(--max);margin:0 auto;padding:24px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 18px;border:1px solid var(--border);border-radius:22px;background:color-mix(in srgb,var(--surface) 92%, transparent);box-shadow:var(--shadow);backdrop-filter:blur(8px);position:sticky;top:12px;z-index:10}
+    .brand{display:flex;gap:14px;align-items:center}.brand h1{margin:0;font-size:clamp(1.35rem,1.1rem + 1vw,2rem)}.brand p{margin:.25rem 0 0;color:var(--muted)}
+    .brand-mark{width:42px;height:42px;color:var(--primary)}
+    .top-actions,.view-switch,.row-actions,.tagline{display:flex;gap:10px;flex-wrap:wrap}
+    .btn,.btn-secondary,.btn-danger,.btn-ghost,.view-btn{min-height:44px;padding:.82rem 1rem;font-weight:700;border-radius:12px;border:1px solid transparent}
+    .btn{background:var(--primary);color:#fff}.btn-secondary{background:var(--surface-2);color:var(--text);border-color:var(--border)}.btn-danger{background:var(--error);color:#fff}.btn-ghost{background:transparent;color:var(--text);border-color:var(--border)}
+    .view-btn{background:var(--surface-2);color:var(--text);border-color:var(--border)}.view-btn.active{background:var(--text);color:var(--inverse)}
+    .banner{margin:18px 0;padding:14px 16px;border-radius:16px;border:1px solid var(--border);font-weight:700;background:var(--surface-2)}
+    .banner.active{background:color-mix(in srgb,var(--primary) 14%, var(--surface));color:var(--primary)}.banner.warning{background:color-mix(in srgb,var(--error) 12%, var(--surface));color:var(--error)}
+    .panel{background:color-mix(in srgb,var(--surface) 94%, transparent);border:1px solid var(--border);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+    .stack{display:grid;gap:18px}.grid-2,.grid-3,.grid-4,.metrics,.teacher-layout{display:grid;gap:16px}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}.teacher-layout{grid-template-columns:1fr 1.45fr}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.section-title h2,.section-title h3{margin:0}.note,.tiny{color:var(--muted)}.tiny{font-size:.88rem}.message{min-height:1.2rem;font-weight:700}.message.error{color:var(--error)}.message.success{color:var(--success)}
+    .subpanel,.metric{padding:16px;border:1px solid var(--border);border-radius:16px;background:var(--surface-2)}.metric small{display:block;color:var(--muted);margin-bottom:6px}.metric strong{display:block;font-size:clamp(1.2rem,.9rem + 1vw,2rem)}
+    .metric.throw{background:color-mix(in srgb,var(--accent) 12%, var(--surface))}.metric.time{background:color-mix(in srgb,var(--info) 12%, var(--surface))}.metric.project{background:color-mix(in srgb,var(--success) 12%, var(--surface))}.metric.total{background:color-mix(in srgb,var(--primary) 12%, var(--surface))}
+    .pill,.score-chip{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:.42rem .76rem;border-radius:999px;border:1px solid var(--border);background:var(--surface-3);font-size:.86rem;font-weight:800}
+    .pill.active{background:color-mix(in srgb,var(--success) 14%, var(--surface));color:var(--success)}.pill.closed{background:color-mix(in srgb,var(--error) 14%, var(--surface));color:var(--error)}.pill.info{background:color-mix(in srgb,var(--info) 14%, var(--surface));color:var(--info)}
+    .tour-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.tour-card{padding:16px;border-radius:16px;border:1px solid var(--border);background:var(--surface)}.tour-card h4{margin:0 0 12px}.time-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end}.time-row span{text-align:center;font-size:1.4rem;font-weight:800;padding-bottom:10px}
+    .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:16px;background:var(--surface)}table{width:100%;border-collapse:collapse;min-width:1050px}th,td{padding:.78rem .72rem;text-align:left;border-bottom:1px solid color-mix(in srgb,var(--border) 80%, transparent);vertical-align:middle}th{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;background:var(--surface-2)}tr:nth-child(even) td{background:color-mix(in srgb,var(--surface-2) 48%, transparent)}
+    .hidden{display:none!important}.nowrap{white-space:nowrap}.footer-note{color:var(--muted);font-size:.95rem}.teacher-score-select{min-width:92px;padding:.48rem .6rem}
+
+    .choice-group{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+    .choice-btn{min-height:44px;padding:.72rem .5rem;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);color:var(--text);font-weight:800}
+    .choice-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    @media (max-width:980px){.grid-2,.grid-3,.grid-4,.metrics,.teacher-layout,.tour-grid{grid-template-columns:1fr}.topbar{position:static}}
+    @media (max-width:640px){.shell{padding:14px}.topbar{flex-direction:column;align-items:stretch}.top-actions>*,.view-switch>*{flex:1 1 auto}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <circle cx="17" cy="16" r="7" stroke="currentColor" stroke-width="4"></circle>
+          <path d="M16 24l10 8 7-2 12 7" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M25 31l-7 15M38 30l7 13" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+          <path d="M39 18h17" stroke="currentColor" stroke-width="5" stroke-linecap="round"></path>
+        </svg>
+        <div>
+          <h1>Biathlon Combine Connect</h1>
+          <p>Vue observateur et console professeur réellement synchronisées.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="view-switch" role="tablist" aria-label="Choix de vue">
+          <button id="observerViewBtn" class="view-btn active" type="button">Vue observateur</button>
+          <button id="teacherViewBtn" class="view-btn" type="button">Vue professeur</button>
+        </div>
+        <button id="themeToggle" class="btn-ghost" type="button" aria-label="Basculer le thème">🌙</button>
+      </div>
+    </header>
+
+    <div id="activeLessonBanner" class="banner warning">Aucune séance active. Le professeur doit ouvrir ou rouvrir une séance.</div>
+
+    <main class="stack">
+      <section id="observerView" class="stack">
+        <div class="panel">
+          <div class="section-title">
+            <div>
+              <h2>Fiche observateur</h2>
+              <p class="note">Cette version corrige les trois tours, les trois lancers et la liaison avec la console professeur.</p>
+            </div>
+            <div class="tagline">
+              <span class="pill info">3 tours actifs</span>
+              <span class="pill info">3 lancers actifs</span>
+              <span class="pill info">Envoi Firestore</span>
+            </div>
+          </div>
+          <p id="studentMessage" class="message"></p>
+
+          <form id="observerForm" class="stack">
+            <div class="grid-3">
+              <div class="subpanel">
+                <h3>Identification</h3>
+                <label for="classeSelect">Classe</label>
+                <select id="classeSelect" required><option value="">Chargement des classes...</option></select>
+                <label for="runnerSelect" style="margin-top:12px">Coureur</label>
+                <select id="runnerSelect" required><option value="">Choisir d'abord une classe</option></select>
+                <label for="observerSelect" style="margin-top:12px">Observateur</label>
+                <select id="observerSelect" required><option value="">Choisir d'abord une classe</option></select>
+              </div>
+
+              <div class="subpanel">
+                <h3>Projet course</h3>
+                <label for="vmaInput">VMA</label>
+                <input id="vmaInput" type="number" min="6" max="22" step="0.5" placeholder="Ex. 12" required>
+                <div class="grid-2" style="margin-top:12px">
+                  <div><label>Temps cible tour</label><div id="targetLapDisplay" class="score-chip">--:--</div></div>
+                  <div><label>Temps cible total</label><div id="targetTotalDisplay" class="score-chip">--:--</div></div>
+                </div>
+                <label style="margin-top:12px"><input id="warmupDone" type="checkbox" style="width:auto;margin-right:8px"> Échauffement réalisé</label>
+                <p class="tiny">Projet /3 : échauffement + respect du projet de lancers + régularité des tours.</p>
+              </div>
+
+              <div class="subpanel">
+                <h3>Projet lancers</h3>
+                <label>Projet lancer 1</label>
+                <input id="projectThrow1" type="hidden" value="2">
+                <div class="choice-group" data-target="projectThrow1">
+                  <button type="button" class="choice-btn" data-value="1">Zone 1</button>
+                  <button type="button" class="choice-btn active" data-value="2">Zone 2</button>
+                  <button type="button" class="choice-btn" data-value="3">Zone 3</button>
+                  <button type="button" class="choice-btn" data-value="0">Pénalité</button>
+                </div>
+                <label style="margin-top:12px">Projet lancer 2</label>
+                <input id="projectThrow2" type="hidden" value="2">
+                <div class="choice-group" data-target="projectThrow2">
+                  <button type="button" class="choice-btn" data-value="1">Zone 1</button>
+                  <button type="button" class="choice-btn active" data-value="2">Zone 2</button>
+                  <button type="button" class="choice-btn" data-value="3">Zone 3</button>
+                  <button type="button" class="choice-btn" data-value="0">Pénalité</button>
+                </div>
+                <label style="margin-top:12px">Projet lancer 3</label>
+                <input id="projectThrow3" type="hidden" value="2">
+                <div class="choice-group" data-target="projectThrow3">
+                  <button type="button" class="choice-btn" data-value="1">Zone 1</button>
+                  <button type="button" class="choice-btn active" data-value="2">Zone 2</button>
+                  <button type="button" class="choice-btn" data-value="3">Zone 3</button>
+                  <button type="button" class="choice-btn" data-value="0">Pénalité</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="metrics">
+              <div class="metric throw"><small>Points lancers /4</small><strong id="throwScorePreview">0.0</strong><span class="tiny">Basé sur les 3 zones atteintes.</span></div>
+              <div class="metric time"><small>Points temps /7</small><strong id="timeScorePreview">0.0</strong><span class="tiny">Comparé au temps cible.</span></div>
+              <div class="metric project"><small>Projet /3</small><strong id="projectScorePreview">0.0</strong><span class="tiny">Échauffement + exactitude.</span></div>
+              <div class="metric total"><small>Total provisoire /14</small><strong id="subtotalPreview">0.0</strong><span class="tiny">Le professeur ajoute ensuite /6.</span></div>
+            </div>
+
+            <div class="tour-grid">
+              <div class="tour-card">
+                <h4>Tour 1 + lancer 1</h4>
+                <label for="lap1Min">Temps tour 1</label>
+                <div class="time-row">
+                  <input id="lap1Min" type="number" min="0" max="20" placeholder="Min">
+                  <span>:</span>
+                  <input id="lap1Sec" type="number" min="0" max="59" placeholder="Sec">
+                </div>
+                <label style="margin-top:12px">Résultat lancer 1</label><p class="tiny">Touchez la zone atteinte ou pénalité.</p>
+                <input id="actualThrow1" type="hidden" value="0">
+                <div class="choice-group" data-target="actualThrow1">
+                  <button type="button" class="choice-btn active" data-value="0">Pénalité</button>
+                  <button type="button" class="choice-btn" data-value="1">Zone 1</button>
+                  <button type="button" class="choice-btn" data-value="2">Zone 2</button>
+                  <button type="button" class="choice-btn" data-value="3">Zone 3</button>
+                </div>
+              </div>
+              <div class="tour-card">
+                <h4>Tour 2 + lancer 2</h4>
+                <label for="lap2Min">Temps tour 2</label>
+                <div class="time-row">
+                  <input id="lap2Min" type="number" min="0" max="20" placeholder="Min">
+                  <span>:</span>
+                  <input id="lap2Sec" type="number" min="0" max="59" placeholder="Sec">
+                </div>
+                <label style="margin-top:12px">Résultat lancer 2</label><p class="tiny">Touchez la zone atteinte ou pénalité.</p>
+                <input id="actualThrow2" type="hidden" value="0">
+                <div class="choice-group" data-target="actualThrow2">
+                  <button type="button" class="choice-btn active" data-value="0">Pénalité</button>
+                  <button type="button" class="choice-btn" data-value="1">Zone 1</button>
+                  <button type="button" class="choice-btn" data-value="2">Zone 2</button>
+                  <button type="button" class="choice-btn" data-value="3">Zone 3</button>
+                </div>
+              </div>
+              <div class="tour-card">
+                <h4>Tour 3 + lancer 3</h4>
+                <label for="lap3Min">Temps tour 3</label>
+                <div class="time-row">
+                  <input id="lap3Min" type="number" min="0" max="20" placeholder="Min">
+                  <span>:</span>
+                  <input id="lap3Sec" type="number" min="0" max="59" placeholder="Sec">
+                </div>
+                <label style="margin-top:12px">Résultat lancer 3</label><p class="tiny">Touchez la zone atteinte ou pénalité.</p>
+                <input id="actualThrow3" type="hidden" value="0">
+                <div class="choice-group" data-target="actualThrow3">
+                  <button type="button" class="choice-btn active" data-value="0">Pénalité</button>
+                  <button type="button" class="choice-btn" data-value="1">Zone 1</button>
+                  <button type="button" class="choice-btn" data-value="2">Zone 2</button>
+                  <button type="button" class="choice-btn" data-value="3">Zone 3</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row-actions">
+              <span class="pill info">Temps total : <strong id="actualTotalDisplay">--:--</strong></span>
+              <span class="pill info">Lancers : <strong id="throwSummaryDisplay">-</strong></span>
+              <span class="pill info">Projet : <strong id="projectSummaryDisplay">-</strong></span>
+            </div>
+
+            <div class="row-actions">
+              <button id="previewBtn" class="btn-secondary" type="button">Actualiser le calcul</button>
+              <button id="submitBtn" class="btn" type="submit">Envoyer le résultat</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="teacherLoginView" class="hidden">
+        <div class="panel" style="max-width:480px;margin:0 auto">
+          <div class="section-title"><h2>Accès professeur</h2></div>
+          <p class="note">Entrez le code d'accès pour ouvrir la console.</p>
+          <label for="teacherCodeInput">Code</label>
+          <input id="teacherCodeInput" type="password" placeholder="Code professeur" autocomplete="off">
+          <p id="teacherCodeMessage" class="message"></p>
+          <button id="teacherCodeBtn" class="btn" type="button" style="width:100%;margin-top:12px">Ouvrir la console</button>
+        </div>
+      </section>
+
+      <section id="teacherView" class="hidden">
+        <div class="teacher-layout">
+          <div class="stack">
+            <div class="panel">
+              <div class="section-title">
+                <h2>Console professeur</h2>
+                <span id="lessonStatus" class="pill closed">Aucune séance active</span>
+              </div>
+              <div class="row-actions" style="margin-bottom:12px">
+                <button id="startLessonBtn" class="btn" type="button">Démarrer une séance</button>
+                <button id="loadHistoryBtn" class="btn-secondary" type="button">Historique</button>
+                <button id="closeLessonBtn" class="btn-danger" type="button" disabled>Clôturer</button>
+              </div>
+              <div class="row-actions">
+                <button id="exportCsvBtn" class="btn-secondary" type="button" disabled>Export CSV</button>
+                <button id="exportPdfBtn" class="btn-secondary" type="button" disabled>Export PDF</button>
+              </div>
+              <p id="teacherMessage" class="message" style="margin-top:10px"></p>
+            </div>
+
+            <div class="panel">
+              <div class="section-title"><h3>Classes Pronote</h3><button id="refreshClassesBtn" class="btn-ghost" type="button">Actualiser</button></div>
+              <div class="grid-2">
+                <div><label for="newClassNameInput">Nom de la classe</label><input id="newClassNameInput" type="text" placeholder="Ex. 4A"></div>
+                <div><label for="classCsvInput">Fichier CSV Pronote</label><input id="classCsvInput" type="file" accept=".csv,.txt"></div>
+              </div>
+              <div class="row-actions" style="margin-top:12px"><button id="createClassBtn" class="btn" type="button">Créer / mettre à jour</button></div>
+              <p id="classMessage" class="message" style="margin-top:10px"></p>
+              <div id="classesListContainer" class="table-wrap" style="margin-top:12px"></div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="panel">
+              <div class="section-title">
+                <div>
+                  <h3>Résultats de la séance</h3>
+                  <p class="note">Les résultats envoyés depuis la vue observateur apparaissent ici en direct.</p>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Classe</th><th>Coureur</th><th>Observateur</th><th>VMA</th><th>Temps</th><th>Lancers</th><th>Lancers /4</th><th>Temps /7</th><th>Projet /3</th><th>Auto /14</th><th>Technique /4</th><th>Juge /2</th><th>Total /20</th>
+                    </tr>
+                  </thead>
+                  <tbody id="resultsTableBody"><tr><td colspan="13">Aucun résultat.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div id="historyPanel" class="panel hidden">
+              <div class="section-title"><h3>Historique des séances</h3><button id="closeHistoryBtn" class="btn-ghost" type="button">Fermer</button></div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Nom</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead>
+                  <tbody id="historyTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <p class="footer-note">V2 corrigée : interface observateur complète, trois temps actifs, trois lancers actifs, synchro prof / élève revue.</p>
+    </main>
+  </div>
+
+  <script>
+    const CONFIG = {
+      teacherCode: '16170',
+      collections: {
+        classes: 'biathlon_classes',
+        lessons: 'biathlon_lessons',
+        activeConfigDoc: 'activeBiathlonLesson'
+      },
+      paceToleranceSec: 10,
+      timeScoreBase: 4,
+      timeScoreDivisor: 22.5
+    };
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyD3Cu1X0JSF1qePFRzcq-RY-MYTB32a-8',
+      authDomain: 'co-rouillac.firebaseapp.com',
+      projectId: 'co-rouillac',
+      storageBucket: 'co-rouillac.firebasestorage.app',
+      messagingSenderId: '729910930573',
+      appId: '1:729910930573:web:f8c0e93c702416fcd446c4'
+    };
+
+    let db = null;
+    let teacherAccessGranted = false;
+    let currentActiveLessonId = null;
+    let currentTeacherLesson = null;
+    let unsubscribeFromResults = null;
+    let currentStudentMap = {};
+
+    const observerView = document.getElementById('observerView');
+    const teacherView = document.getElementById('teacherView');
+    const teacherLoginView = document.getElementById('teacherLoginView');
+    const observerViewBtn = document.getElementById('observerViewBtn');
+    const teacherViewBtn = document.getElementById('teacherViewBtn');
+    const activeLessonBanner = document.getElementById('activeLessonBanner');
+    const themeToggle = document.getElementById('themeToggle');
+
+    const classeSelect = document.getElementById('classeSelect');
+    const runnerSelect = document.getElementById('runnerSelect');
+    const observerSelect = document.getElementById('observerSelect');
+    const vmaInput = document.getElementById('vmaInput');
+    const warmupDone = document.getElementById('warmupDone');
+    const projectThrow1 = document.getElementById('projectThrow1');
+    const projectThrow2 = document.getElementById('projectThrow2');
+    const projectThrow3 = document.getElementById('projectThrow3');
+    const actualThrow1 = document.getElementById('actualThrow1');
+    const actualThrow2 = document.getElementById('actualThrow2');
+    const actualThrow3 = document.getElementById('actualThrow3');
+    const targetLapDisplay = document.getElementById('targetLapDisplay');
+    const targetTotalDisplay = document.getElementById('targetTotalDisplay');
+    const actualTotalDisplay = document.getElementById('actualTotalDisplay');
+    const throwSummaryDisplay = document.getElementById('throwSummaryDisplay');
+    const projectSummaryDisplay = document.getElementById('projectSummaryDisplay');
+    const throwScorePreview = document.getElementById('throwScorePreview');
+    const timeScorePreview = document.getElementById('timeScorePreview');
+    const projectScorePreview = document.getElementById('projectScorePreview');
+    const subtotalPreview = document.getElementById('subtotalPreview');
+    const previewBtn = document.getElementById('previewBtn');
+    const observerForm = document.getElementById('observerForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const studentMessage = document.getElementById('studentMessage');
+
+    const teacherCodeInput = document.getElementById('teacherCodeInput');
+    const teacherCodeBtn = document.getElementById('teacherCodeBtn');
+    const teacherCodeMessage = document.getElementById('teacherCodeMessage');
+    const teacherMessage = document.getElementById('teacherMessage');
+    const classMessage = document.getElementById('classMessage');
+    const lessonStatus = document.getElementById('lessonStatus');
+    const startLessonBtn = document.getElementById('startLessonBtn');
+    const loadHistoryBtn = document.getElementById('loadHistoryBtn');
+    const closeLessonBtn = document.getElementById('closeLessonBtn');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+    const refreshClassesBtn = document.getElementById('refreshClassesBtn');
+    const createClassBtn = document.getElementById('createClassBtn');
+    const newClassNameInput = document.getElementById('newClassNameInput');
+    const classCsvInput = document.getElementById('classCsvInput');
+    const classesListContainer = document.getElementById('classesListContainer');
+    const resultsTableBody = document.getElementById('resultsTableBody');
+    const historyPanel = document.getElementById('historyPanel');
+    const historyTableBody = document.getElementById('historyTableBody');
+    const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+
+    const lapInputs = [1,2,3].map(i => ({
+      min: document.getElementById(`lap${i}Min`),
+      sec: document.getElementById(`lap${i}Sec`)
+    }));
+
+    function setTheme(mode) {
+      document.documentElement.setAttribute('data-theme', mode);
+      themeToggle.textContent = mode === 'dark' ? '☀️' : '🌙';
+    }
+    let currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    setTheme(currentTheme);
+    themeToggle.addEventListener('click', () => {
+      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(currentTheme);
+    });
+
+    function showView(name) {
+      observerView.classList.add('hidden');
+      teacherView.classList.add('hidden');
+      teacherLoginView.classList.add('hidden');
+      observerViewBtn.classList.remove('active');
+      teacherViewBtn.classList.remove('active');
+      if (name === 'observer') {
+        observerView.classList.remove('hidden');
+        observerViewBtn.classList.add('active');
+      } else if (name === 'teacher') {
+        teacherView.classList.remove('hidden');
+        teacherViewBtn.classList.add('active');
+      } else {
+        teacherLoginView.classList.remove('hidden');
+        teacherViewBtn.classList.add('active');
+      }
+    }
+
+    observerViewBtn.addEventListener('click', () => showView('observer'));
+    teacherViewBtn.addEventListener('click', () => showView(teacherAccessGranted ? 'teacher' : 'teacherLogin'));
+    teacherCodeBtn.addEventListener('click', () => {
+      if (teacherCodeInput.value === CONFIG.teacherCode) {
+        teacherAccessGranted = true;
+        teacherCodeInput.value = '';
+        teacherCodeMessage.textContent = '';
+        showView('teacher');
+        loadClassesOverview();
+        if (currentActiveLessonId) openLesson(currentActiveLessonId);
+      } else {
+        teacherCodeMessage.textContent = 'Code incorrect.';
+        teacherCodeMessage.className = 'message error';
+      }
+    });
+    teacherCodeInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); teacherCodeBtn.click(); } });
+
+    function showStudentMessage(message = '', type = '') {
+      studentMessage.textContent = message;
+      studentMessage.className = `message ${type}`.trim();
+    }
+    function showTeacherMessage(message = '', type = '') {
+      teacherMessage.textContent = message;
+      teacherMessage.className = `message ${type}`.trim();
+    }
+    function showClassMessage(message = '', type = '') {
+      classMessage.textContent = message;
+      classMessage.className = `message ${type}`.trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function slugify(value) {
+      return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-+|-+$/g, '') || `ID-${Date.now()}`;
+    }
+    function round1(v) { return Math.round(v * 10) / 10; }
+    function round2(v) { return Math.round(v * 100) / 100; }
+    function clamp(min, value, max) { return Math.max(min, Math.min(value, max)); }
+    function roundTo(value, step) { return Math.round(value / step) * step; }
+    function mmss(totalSeconds) {
+      if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return '--:--';
+      const m = Math.floor(totalSeconds / 60);
+      const s = Math.round(totalSeconds % 60);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    function vmaToLapSeconds(vma) {
+      if (!Number.isFinite(vma) || vma <= 0) return null;
+      return Math.round(1440 / vma);
+    }
+
+    function detectDelimiter(text) {
+      const firstLine = text.split(/\r?\n/).find(line => line.trim().length > 0) || '';
+      const candidates = [';', ',', '\t'];
+      let best = ';';
+      let bestCount = -1;
+      candidates.forEach(delim => {
+        const count = firstLine.split(delim).length;
+        if (count > bestCount) { best = delim; bestCount = count; }
+      });
+      return best;
+    }
+    function splitCSVLine(line, delimiter) {
+      const result = []; let current = ''; let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i]; const next = line[i + 1];
+        if (char === '"') {
+          if (inQuotes && next === '"') { current += '"'; i++; } else { inQuotes = !inQuotes; }
+        } else if (char === delimiter && !inQuotes) {
+          result.push(current.trim()); current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim());
+      return result.map(v => v.replace(/^"|"$/g, '').trim());
+    }
+    function normalizeHeader(value) {
+      return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+    function findHeaderIndex(headers, possibleNames) {
+      const normalized = headers.map(normalizeHeader);
+      return normalized.findIndex(h => possibleNames.includes(h));
+    }
+    function parsePronoteCSV(text) {
+      const clean = text.replace(/^\uFEFF/, '').trim();
+      if (!clean) throw new Error('Le fichier est vide.');
+      const delimiter = detectDelimiter(clean);
+      const lines = clean.split(/\r?\n/).filter(line => line.trim().length > 0);
+      if (lines.length < 2) throw new Error('Le fichier doit contenir un en-tête et au moins une ligne élève.');
+      const headers = splitCSVLine(lines[0], delimiter);
+      const elevesIndex = findHeaderIndex(headers, ['eleves', 'eleve', 'listeeleves']);
+      const nomIndex = findHeaderIndex(headers, ['nom', 'elevenom', 'nomdeleleve', 'lastname']);
+      const prenomIndex = findHeaderIndex(headers, ['prenom', 'prenoms', 'eleveprenom', 'prenomdeleleve', 'firstname']);
+      const students = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = splitCSVLine(lines[i], delimiter);
+        if (elevesIndex !== -1) {
+          const full = (cols[elevesIndex] || '').trim();
+          if (!full) continue;
+          const parts = full.split(/\s+/).filter(Boolean);
+          const prenom = parts.pop() || '';
+          const nom = parts.join(' ').trim() || prenom;
+          students.push({ nom, prenom, nomComplet: `${nom.toUpperCase()} ${prenom}`.trim() });
+        } else {
+          const nom = nomIndex !== -1 ? (cols[nomIndex] || '').trim() : '';
+          const prenom = prenomIndex !== -1 ? (cols[prenomIndex] || '').trim() : '';
+          if (!nom && !prenom) continue;
+          students.push({ nom, prenom, nomComplet: `${nom.toUpperCase()} ${prenom}`.trim() });
+        }
+      }
+      const seen = new Set();
+      const dedup = [];
+      students.forEach(student => {
+        const id = slugify(student.nomComplet);
+        if (!seen.has(id)) { seen.add(id); dedup.push({ ...student, id }); }
+      });
+      dedup.sort((a, b) => a.nomComplet.localeCompare(b.nomComplet, 'fr'));
+      if (!dedup.length) throw new Error('Aucun élève exploitable trouvé dans le fichier.');
+      return dedup;
+    }
+    function readSelectedFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Impossible de lire le fichier.'));
+        reader.readAsText(file, 'utf-8');
+      });
+    }
+
+
+    function renderChoiceGroup(group) {
+      const targetId = group.dataset.target;
+      const input = document.getElementById(targetId);
+      group.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === String(input.value));
+      });
+    }
+    function initChoiceGroups() {
+      document.querySelectorAll('.choice-group').forEach(group => {
+        renderChoiceGroup(group);
+        group.querySelectorAll('.choice-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const targetId = group.dataset.target;
+            const input = document.getElementById(targetId);
+            input.value = btn.dataset.value;
+            renderChoiceGroup(group);
+            computeScores();
+          });
+        });
+      });
+    }
+
+    function getLapValues() {
+      return lapInputs.map(({ min, sec }) => {
+        const m = parseInt(min.value, 10);
+        const s = parseInt(sec.value, 10);
+        if (Number.isNaN(m) || Number.isNaN(s) || m < 0 || s < 0 || s > 59) return null;
+        return m * 60 + s;
+      });
+    }
+    function getProjectThrows() { return [projectThrow1, projectThrow2, projectThrow3].map(el => parseInt(el.value, 10)); }
+    function getActualThrows() { return [actualThrow1, actualThrow2, actualThrow3].map(el => parseInt(el.value, 10)); }
+
+    function updatePreview(summary) {
+      targetLapDisplay.textContent = mmss(summary.targetLap);
+      targetTotalDisplay.textContent = mmss(summary.targetTotal);
+      actualTotalDisplay.textContent = mmss(summary.totalActual);
+      throwSummaryDisplay.textContent = summary.actualThrows.map(z => z === 0 ? 'P' : `Z${z}`).join(' / ');
+      projectSummaryDisplay.textContent = `${summary.exactThrowMatches}/3 lancers exacts • ${summary.paceMatches}/3 tours dans la cible`;
+      throwScorePreview.textContent = Number(summary.throwScore || 0).toFixed(1);
+      timeScorePreview.textContent = Number(summary.timeScore || 0).toFixed(1);
+      projectScorePreview.textContent = Number(summary.projectScore || 0).toFixed(2);
+      subtotalPreview.textContent = Number(summary.subtotal14 || 0).toFixed(2);
+    }
+
+    function computeScores() {
+      const vma = parseFloat(vmaInput.value);
+      const targetLap = vmaToLapSeconds(vma);
+      const targetTotal = targetLap ? targetLap * 3 : null;
+      const lapValues = getLapValues();
+      const actualThrows = getActualThrows();
+      const projectThrows = getProjectThrows();
+      const lapsComplete = lapValues.every(v => Number.isFinite(v) && v > 0);
+      const totalActual = lapsComplete ? lapValues.reduce((a, b) => a + b, 0) : null;
+      let timeScore = 0;
+      if (targetTotal && totalActual) timeScore = clamp(1, round1(CONFIG.timeScoreBase + ((targetTotal - totalActual) / CONFIG.timeScoreDivisor)), 7);
+      const mappedThrowValues = actualThrows.map(z => z === 0 ? 0 : z + 1);
+      const throwAverage = mappedThrowValues.reduce((a, b) => a + b, 0) / mappedThrowValues.length;
+      const throwScore = clamp(0, roundTo(throwAverage, 0.5), 4);
+      const exactThrowMatches = actualThrows.reduce((acc, value, idx) => acc + (value === projectThrows[idx] ? 1 : 0), 0);
+      const paceMatches = lapValues.reduce((acc, value) => {
+        if (!targetLap || !Number.isFinite(value)) return acc;
+        return acc + (Math.abs(value - targetLap) <= CONFIG.paceToleranceSec ? 1 : 0);
+      }, 0);
+      const projectScore = clamp(0, round2((warmupDone.checked ? 1 : 0) + (exactThrowMatches / 3) + (paceMatches / 3)), 3);
+      const subtotal14 = round2(throwScore + timeScore + projectScore);
+      const summary = { vma, targetLap, targetTotal, lapValues, totalActual, actualThrows, projectThrows, exactThrowMatches, paceMatches, throwScore, timeScore, projectScore, subtotal14 };
+      updatePreview(summary);
+      return summary;
+    }
+
+    [vmaInput, warmupDone, projectThrow1, projectThrow2, projectThrow3, actualThrow1, actualThrow2, actualThrow3, ...lapInputs.flatMap(item => [item.min, item.sec])].forEach(el => {
+      if (el.tagName === 'SELECT') {
+        el.addEventListener('change', computeScores);
+      } else if (el.type === 'checkbox') {
+        el.addEventListener('change', computeScores);
+      } else {
+        el.addEventListener('input', computeScores);
+        el.addEventListener('change', computeScores);
+      }
+    });
+    previewBtn.addEventListener('click', computeScores);
+
+    async function loadStudentClasses() {
+      try {
+        const selected = classeSelect.value;
+        const snap = await db.collection(CONFIG.collections.classes).get();
+        const classes = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(item => item.active !== false).sort((a, b) => (a.className || a.id).localeCompare(b.className || b.id, 'fr'));
+        classeSelect.innerHTML = '<option value="">Choisir une classe</option>';
+        classes.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item.id;
+          option.textContent = item.className || item.id;
+          classeSelect.appendChild(option);
+        });
+        if (selected && classes.some(c => c.id === selected)) classeSelect.value = selected;
+        await loadStudentsForSelectedClass();
+      } catch (error) {
+        console.error(error);
+        classeSelect.innerHTML = '<option value="">Classes indisponibles</option>';
+        showStudentMessage('Impossible de charger les classes.', 'error');
+      }
+    }
+
+    async function loadStudentsForSelectedClass() {
+      const classId = classeSelect.value;
+      currentStudentMap = {};
+      if (!classId) {
+        runnerSelect.innerHTML = '<option value="">Choisir d\'abord une classe</option>';
+        observerSelect.innerHTML = '<option value="">Choisir d\'abord une classe</option>';
+        return;
+      }
+      runnerSelect.innerHTML = '<option value="">Chargement des élèves...</option>';
+      observerSelect.innerHTML = '<option value="">Chargement des élèves...</option>';
+      try {
+        const snap = await db.collection(CONFIG.collections.classes).doc(classId).collection('eleves').get();
+        const students = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => (a.nomComplet || '').localeCompare(b.nomComplet || '', 'fr'));
+        const options = ['<option value="">Choisir un élève</option>'];
+        students.forEach(student => {
+          currentStudentMap[student.id] = student;
+          options.push(`<option value="${escapeHtml(student.id)}">${escapeHtml(student.nomComplet || student.id)}</option>`);
+        });
+        runnerSelect.innerHTML = options.join('');
+        observerSelect.innerHTML = options.join('');
+      } catch (error) {
+        console.error(error);
+        runnerSelect.innerHTML = '<option value="">Élèves indisponibles</option>';
+        observerSelect.innerHTML = '<option value="">Élèves indisponibles</option>';
+      }
+    }
+    classeSelect.addEventListener('change', loadStudentsForSelectedClass);
+
+    async function replaceStudentsForClass(classId, className, students, sourceFileName) {
+      const classRef = db.collection(CONFIG.collections.classes).doc(classId);
+      const existing = await classRef.collection('eleves').get();
+      let batch = db.batch();
+      let count = 0;
+      for (const doc of existing.docs) {
+        batch.delete(doc.ref); count++;
+        if (count >= 350) { await batch.commit(); batch = db.batch(); count = 0; }
+      }
+      if (count > 0) await batch.commit();
+      await classRef.set({ classId, className, active: true, source: 'Pronote CSV', sourceFileName, studentCount: students.length, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), createdAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      batch = db.batch(); count = 0;
+      for (const student of students) {
+        const ref = classRef.collection('eleves').doc(student.id);
+        batch.set(ref, { nom: student.nom || '', prenom: student.prenom || '', nomComplet: student.nomComplet || student.id, classId, className, active: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        count++;
+        if (count >= 350) { await batch.commit(); batch = db.batch(); count = 0; }
+      }
+      if (count > 0) await batch.commit();
+    }
+
+    async function deleteClassFully(classId) {
+      const classRef = db.collection(CONFIG.collections.classes).doc(classId);
+      const studentsSnap = await classRef.collection('eleves').get();
+      let batch = db.batch();
+      let count = 0;
+      for (const doc of studentsSnap.docs) {
+        batch.delete(doc.ref); count++;
+        if (count >= 350) { await batch.commit(); batch = db.batch(); count = 0; }
+      }
+      if (count > 0) await batch.commit();
+      await classRef.delete();
+    }
+
+    async function createOrUpdateClassFromCsv() {
+      const className = newClassNameInput.value.trim();
+      const file = classCsvInput.files[0];
+      if (!className) return showClassMessage('Saisissez le nom de la classe.', 'error');
+      if (!file) return showClassMessage('Choisissez le fichier CSV Pronote.', 'error');
+      try {
+        createClassBtn.disabled = true;
+        showClassMessage('Import en cours...', 'success');
+        const text = await readSelectedFile(file);
+        const students = parsePronoteCSV(text);
+        const classId = slugify(className);
+        await replaceStudentsForClass(classId, className, students, file.name);
+        newClassNameInput.value = '';
+        classCsvInput.value = '';
+        showClassMessage(`Classe ${className} enregistrée avec ${students.length} élèves.`, 'success');
+        await loadStudentClasses();
+        await loadClassesOverview();
+      } catch (error) {
+        console.error(error);
+        showClassMessage(error.message || 'Import impossible.', 'error');
+      } finally {
+        createClassBtn.disabled = false;
+      }
+    }
+    createClassBtn.addEventListener('click', createOrUpdateClassFromCsv);
+    refreshClassesBtn.addEventListener('click', async () => { await loadStudentClasses(); await loadClassesOverview(); });
+
+    async function loadClassesOverview() {
+      try {
+        const snap = await db.collection(CONFIG.collections.classes).get();
+        const rows = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => (a.className || a.id).localeCompare(b.className || b.id, 'fr'));
+        if (!rows.length) {
+          classesListContainer.innerHTML = '<table><tbody><tr><td>Aucune classe enregistrée.</td></tr></tbody></table>';
+          return;
+        }
+        let html = '<table><thead><tr><th>Classe</th><th>Élèves</th><th>Fichier</th><th>Action</th></tr></thead><tbody>';
+        rows.forEach(item => {
+          html += `<tr><td>${escapeHtml(item.className || item.id)}</td><td>${item.studentCount || 0}</td><td>${escapeHtml(item.sourceFileName || '')}</td><td><button class="btn-danger delete-class-btn" type="button" data-id="${escapeHtml(item.id)}" data-name="${escapeHtml(item.className || item.id)}">Effacer</button></td></tr>`;
+        });
+        html += '</tbody></table>';
+        classesListContainer.innerHTML = html;
+        document.querySelectorAll('.delete-class-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const name = btn.dataset.name;
+            if (!confirm(`Effacer la classe ${name} ?`)) return;
+            try {
+              await deleteClassFully(id);
+              showClassMessage(`Classe ${name} supprimée.`, 'success');
+              await loadClassesOverview();
+              await loadStudentClasses();
+            } catch (error) {
+              console.error(error);
+              showClassMessage('Suppression impossible.', 'error');
+            }
+          });
+        });
+      } catch (error) {
+        console.error(error);
+        classesListContainer.innerHTML = '<table><tbody><tr><td>Impossible de charger les classes.</td></tr></tbody></table>';
+      }
+    }
+
+    async function startLesson() {
+      const lessonName = prompt('Nom de la séance', 'Biathlon combiné');
+      if (!lessonName) return;
+      const now = new Date();
+      const lessonId = `biathlon-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${now.getTime()}`;
+      try {
+        await db.collection(CONFIG.collections.lessons).doc(lessonId).set({ lessonId, lessonName, lessonDate: now.toISOString().slice(0, 10), status: 'active', startedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        await db.collection('config').doc(CONFIG.collections.activeConfigDoc).set({ lessonId, lessonName, startedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        await openLesson(lessonId, lessonName);
+        showTeacherMessage(`Séance ${lessonName} démarrée.`, 'success');
+      } catch (error) {
+        console.error(error);
+        showTeacherMessage('Impossible de démarrer la séance.', 'error');
+      }
+    }
+    startLessonBtn.addEventListener('click', startLesson);
+
+    async function openLesson(lessonId, lessonName = '') {
+      currentTeacherLesson = { id: lessonId, name: lessonName || lessonId };
+      if (!lessonName) {
+        const doc = await db.collection(CONFIG.collections.lessons).doc(lessonId).get();
+        if (doc.exists) currentTeacherLesson.name = doc.data().lessonName || lessonId;
+      }
+      if (unsubscribeFromResults) unsubscribeFromResults();
+      lessonStatus.textContent = `Séance active · ${currentTeacherLesson.name}`;
+      lessonStatus.className = 'pill active';
+      closeLessonBtn.disabled = false;
+      exportCsvBtn.disabled = false;
+      exportPdfBtn.disabled = false;
+      resultsTableBody.innerHTML = '<tr><td colspan="13">Chargement...</td></tr>';
+      unsubscribeFromResults = db.collection(CONFIG.collections.lessons).doc(lessonId).collection('resultats').onSnapshot(snapshot => {
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        docs.sort((a, b) => {
+          const ta = a.timestamp && a.timestamp.toDate ? a.timestamp.toDate().getTime() : 0;
+          const tb = b.timestamp && b.timestamp.toDate ? b.timestamp.toDate().getTime() : 0;
+          return ta - tb;
+        });
+        renderResults(docs, lessonId);
+      }, error => {
+        console.error(error);
+        resultsTableBody.innerHTML = '<tr><td colspan="13">Erreur de lecture Firestore.</td></tr>';
+      });
+    }
+
+    function renderResults(rows, lessonId) {
+      if (!rows.length) {
+        resultsTableBody.innerHTML = '<tr><td colspan="13">Aucun résultat pour cette séance.</td></tr>';
+        return;
+      }
+      resultsTableBody.innerHTML = rows.map(item => {
+        const final20 = round2((item.subtotal14 || 0) + (item.techniqueScore || 0) + (item.judgeScore || 0));
+        return `<tr>
+          <td>${escapeHtml(item.classLabel || '')}</td>
+          <td>${escapeHtml(item.runnerName || '')}</td>
+          <td>${escapeHtml(item.observerName || '')}</td>
+          <td>${escapeHtml(item.vma || '')}</td>
+          <td class="nowrap">${escapeHtml(item.actualTotalLabel || '')}</td>
+          <td>${escapeHtml((item.actualThrows || []).map(v => v === 0 ? 'P' : `Z${v}`).join(' / '))}</td>
+          <td>${Number(item.throwScore || 0).toFixed(1)}</td>
+          <td>${Number(item.timeScore || 0).toFixed(1)}</td>
+          <td>${Number(item.projectScore || 0).toFixed(2)}</td>
+          <td><strong>${Number(item.subtotal14 || 0).toFixed(2)}</strong></td>
+          <td><select class="teacher-score-select tech-select" data-id="${escapeHtml(item.id)}">${[0,1,2,3,4].map(v => `<option value="${v}" ${Number(item.techniqueScore || 0) === v ? 'selected' : ''}>${v}</option>`).join('')}</select></td>
+          <td><select class="teacher-score-select judge-select" data-id="${escapeHtml(item.id)}">${[0,1,2].map(v => `<option value="${v}" ${Number(item.judgeScore || 0) === v ? 'selected' : ''}>${v}</option>`).join('')}</select></td>
+          <td><strong>${final20.toFixed(2)}</strong></td>
+        </tr>`;
+      }).join('');
+      document.querySelectorAll('.tech-select').forEach(select => {
+        select.addEventListener('change', async () => {
+          const docId = select.dataset.id;
+          const tech = parseFloat(select.value) || 0;
+          const judge = parseFloat(document.querySelector(`.judge-select[data-id="${docId}"]`)?.value || '0');
+          await updateTeacherScores(lessonId, docId, tech, judge);
+        });
+      });
+      document.querySelectorAll('.judge-select').forEach(select => {
+        select.addEventListener('change', async () => {
+          const docId = select.dataset.id;
+          const judge = parseFloat(select.value) || 0;
+          const tech = parseFloat(document.querySelector(`.tech-select[data-id="${docId}"]`)?.value || '0');
+          await updateTeacherScores(lessonId, docId, tech, judge);
+        });
+      });
+    }
+
+    async function updateTeacherScores(lessonId, docId, techniqueScore, judgeScore) {
+      try {
+        await db.collection(CONFIG.collections.lessons).doc(lessonId).collection('resultats').doc(docId).set({ techniqueScore, judgeScore, total20: round2((techniqueScore || 0) + (judgeScore || 0)) }, { merge: true });
+      } catch (error) {
+        console.error(error);
+        showTeacherMessage('Mise à jour des points impossible.', 'error');
+      }
+    }
+
+    async function closeActiveLesson() {
+      const lessonId = currentTeacherLesson && currentTeacherLesson.id ? currentTeacherLesson.id : currentActiveLessonId;
+      if (!lessonId) return showTeacherMessage('Aucune séance à clôturer.', 'error');
+      if (!confirm('Clôturer la séance active ?')) return;
+      try {
+        await db.collection(CONFIG.collections.lessons).doc(lessonId).set({ status: 'closed', closedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        await db.collection('config').doc(CONFIG.collections.activeConfigDoc).delete();
+        if (unsubscribeFromResults) { unsubscribeFromResults(); unsubscribeFromResults = null; }
+        currentTeacherLesson = null;
+        currentActiveLessonId = null;
+        lessonStatus.textContent = 'Aucune séance active';
+        lessonStatus.className = 'pill closed';
+        closeLessonBtn.disabled = true;
+        exportCsvBtn.disabled = true;
+        exportPdfBtn.disabled = true;
+        resultsTableBody.innerHTML = '<tr><td colspan="13">Aucun résultat.</td></tr>';
+        showTeacherMessage('Séance clôturée.', 'success');
+      } catch (error) {
+        console.error(error);
+        showTeacherMessage('Clôture impossible.', 'error');
+      }
+    }
+    closeLessonBtn.addEventListener('click', closeActiveLesson);
+
+    async function loadHistory() {
+      historyPanel.classList.remove('hidden');
+      historyTableBody.innerHTML = '<tr><td colspan="4">Chargement...</td></tr>';
+      try {
+        const snap = await db.collection(CONFIG.collections.lessons).get();
+        const lessons = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => {
+          const da = a.startedAt && a.startedAt.toDate ? a.startedAt.toDate().getTime() : 0;
+          const dbb = b.startedAt && b.startedAt.toDate ? b.startedAt.toDate().getTime() : 0;
+          return dbb - da;
+        });
+        if (!lessons.length) {
+          historyTableBody.innerHTML = '<tr><td colspan="4">Aucune séance enregistrée.</td></tr>';
+          return;
+        }
+        historyTableBody.innerHTML = lessons.map(item => `
+          <tr>
+            <td>${escapeHtml(item.lessonName || item.id)}</td>
+            <td>${item.startedAt && item.startedAt.toDate ? item.startedAt.toDate().toLocaleString('fr-FR') : ''}</td>
+            <td><span class="pill ${item.status === 'active' ? 'active' : 'closed'}">${escapeHtml(item.status || 'closed')}</span></td>
+            <td><button class="btn-secondary reopen-btn" type="button" data-id="${escapeHtml(item.id)}" data-name="${escapeHtml(item.lessonName || item.id)}">Rouvrir</button></td>
+          </tr>`).join('');
+        document.querySelectorAll('.reopen-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const lessonId = btn.dataset.id;
+            const lessonName = btn.dataset.name;
+            await db.collection('config').doc(CONFIG.collections.activeConfigDoc).set({ lessonId, lessonName, reopenedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            await db.collection(CONFIG.collections.lessons).doc(lessonId).set({ status: 'active', reopenedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            await openLesson(lessonId, lessonName);
+            historyPanel.classList.add('hidden');
+            showTeacherMessage(`Séance ${lessonName} rouverte.`, 'success');
+          });
+        });
+      } catch (error) {
+        console.error(error);
+        historyTableBody.innerHTML = '<tr><td colspan="4">Historique indisponible.</td></tr>';
+      }
+    }
+    loadHistoryBtn.addEventListener('click', loadHistory);
+    closeHistoryBtn.addEventListener('click', () => historyPanel.classList.add('hidden'));
+
+    function getTableRowsData() {
+      return Array.from(resultsTableBody.querySelectorAll('tr')).map(row => Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim())).filter(row => row.length === 13);
+    }
+    exportCsvBtn.addEventListener('click', () => {
+      const rows = getTableRowsData();
+      if (!rows.length) return showTeacherMessage('Aucune donnée à exporter.', 'error');
+      const lessonName = currentTeacherLesson && currentTeacherLesson.name ? currentTeacherLesson.name : 'biathlon';
+      const lines = [['Classe','Coureur','Observateur','VMA','Temps','Lancers','Lancers/4','Temps/7','Projet/3','Auto/14','Technique/4','Juge/2','Total/20'].join(';')];
+      rows.forEach(row => lines.push(row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(';')));
+      const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `biathlon-${lessonName.replace(/\s+/g, '-')}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+    exportPdfBtn.addEventListener('click', () => {
+      const rows = getTableRowsData();
+      if (!rows.length) return showTeacherMessage('Aucune donnée à exporter.', 'error');
+      const lessonName = currentTeacherLesson && currentTeacherLesson.name ? currentTeacherLesson.name : 'Biathlon';
+      const jsPDF = window.jspdf.jsPDF;
+      const doc = new jsPDF({ orientation: 'landscape' });
+      doc.text(`Résultats - ${lessonName}`, 14, 18);
+      doc.autoTable({ startY: 24, head: [['Classe','Coureur','Observateur','VMA','Temps','Lancers','Lancers/4','Temps/7','Projet/3','Auto/14','Technique/4','Juge/2','Total/20']], body: rows, theme: 'striped', styles: { fontSize: 7 }, headStyles: { fillColor: [4, 107, 114] } });
+      doc.save(`biathlon-${lessonName.replace(/\s+/g, '-')}.pdf`);
+    });
+
+    async function submitObserverResult(event) {
+      event.preventDefault();
+      showStudentMessage('');
+      if (!currentActiveLessonId) return showStudentMessage('Aucune séance active. Attendez le professeur.', 'error');
+      const classId = classeSelect.value;
+      const runnerId = runnerSelect.value;
+      const observerId = observerSelect.value;
+      if (!classId || !runnerId || !observerId) return showStudentMessage('Choisissez la classe, le coureur et l’observateur.', 'error');
+      if (runnerId === observerId) return showStudentMessage('Le coureur et l’observateur doivent être différents.', 'error');
+      const summary = computeScores();
+      if (!Number.isFinite(summary.vma) || summary.vma <= 0) return showStudentMessage('VMA invalide.', 'error');
+      if (!summary.totalActual) return showStudentMessage('Saisissez les trois temps de tour.', 'error');
+      const runner = currentStudentMap[runnerId];
+      const observer = currentStudentMap[observerId];
+      const classLabel = classeSelect.options[classeSelect.selectedIndex] ? classeSelect.options[classeSelect.selectedIndex].textContent : classId;
+      const payload = {
+        lessonId: currentActiveLessonId,
+        classId,
+        classLabel,
+        runnerId,
+        runnerName: runner && runner.nomComplet ? runner.nomComplet : runnerId,
+        observerId,
+        observerName: observer && observer.nomComplet ? observer.nomComplet : observerId,
+        vma: summary.vma,
+        targetLapSeconds: summary.targetLap,
+        targetLapLabel: mmss(summary.targetLap),
+        targetTotalSeconds: summary.targetTotal,
+        targetTotalLabel: mmss(summary.targetTotal),
+        lapTimes: summary.lapValues,
+        actualTotalSeconds: summary.totalActual,
+        actualTotalLabel: mmss(summary.totalActual),
+        projectThrows: summary.projectThrows,
+        actualThrows: summary.actualThrows,
+        warmupDone: warmupDone.checked,
+        exactThrowMatches: summary.exactThrowMatches,
+        paceMatches: summary.paceMatches,
+        throwScore: summary.throwScore,
+        timeScore: summary.timeScore,
+        projectScore: summary.projectScore,
+        subtotal14: summary.subtotal14,
+        techniqueScore: 0,
+        judgeScore: 0,
+        total20: summary.subtotal14,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Envoi en cours...';
+        await db.collection(CONFIG.collections.lessons).doc(currentActiveLessonId).collection('resultats').add(payload);
+        showStudentMessage('Résultat envoyé.', 'success');
+        observerForm.reset();
+        updatePreview({ targetLap:null, targetTotal:null, totalActual:null, actualThrows:[0,0,0], exactThrowMatches:0, paceMatches:0, throwScore:0, timeScore:0, projectScore:0, subtotal14:0 });
+      } catch (error) {
+        console.error(error);
+        showStudentMessage('Envoi impossible. Vérifiez la connexion.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Envoyer le résultat';
+      }
+    }
+    observerForm.addEventListener('submit', submitObserverResult);
+
+    function listenToActiveLesson() {
+      db.collection('config').doc(CONFIG.collections.activeConfigDoc).onSnapshot(doc => {
+        if (doc.exists && doc.data().lessonId) {
+          const data = doc.data();
+          currentActiveLessonId = data.lessonId;
+          activeLessonBanner.textContent = `Séance active : ${data.lessonName || data.lessonId}`;
+          activeLessonBanner.className = 'banner active';
+          if (teacherAccessGranted && (!currentTeacherLesson || currentTeacherLesson.id !== data.lessonId)) openLesson(data.lessonId, data.lessonName || data.lessonId);
+        } else {
+          currentActiveLessonId = null;
+          activeLessonBanner.textContent = 'Aucune séance active. Le professeur doit ouvrir ou rouvrir une séance.';
+          activeLessonBanner.className = 'banner warning';
+          if (!currentTeacherLesson) {
+            lessonStatus.textContent = 'Aucune séance active';
+            lessonStatus.className = 'pill closed';
+          }
+        }
+      }, error => {
+        console.error(error);
+        activeLessonBanner.textContent = 'Connexion Firestore indisponible.';
+        activeLessonBanner.className = 'banner warning';
+      });
+    }
+
+    async function init() {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        showView('observer');
+        initChoiceGroups();
+        computeScores();
+        await loadStudentClasses();
+        await loadClassesOverview();
+        listenToActiveLesson();
+      } catch (error) {
+        console.error(error);
+        showStudentMessage('Initialisation Firebase impossible.', 'error');
+      }
+    }
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>
