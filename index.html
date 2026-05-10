@@ -56,6 +56,27 @@
     .choice-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
     @media (max-width:980px){.grid-2,.grid-3,.grid-4,.metrics,.teacher-layout,.tour-grid{grid-template-columns:1fr}.topbar{position:static}}
     @media (max-width:640px){.shell{padding:14px}.topbar{flex-direction:column;align-items:stretch}.top-actions>*,.view-switch>*{flex:1 1 auto}}
+  
+    .svg-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.05em;
+      height: 1.05em;
+      margin-right: .48rem;
+      vertical-align: -.16em;
+      color: var(--primary);
+      flex: 0 0 auto;
+    }
+    .svg-icon svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    h2 .svg-icon, h3 .svg-icon, h4 .svg-icon, label .svg-icon, .tiny .svg-icon {
+      color: var(--primary);
+    }
+
   </style>
 </head>
 <body>
@@ -89,7 +110,7 @@
         <div class="panel">
           <div class="section-title">
             <div>
-              <h2>Fiche observateur</h2>
+              <h2><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.9"/></svg></span>Fiche observateur</h2>
               <p class="note">Cette version corrige les trois tours, les trois lancers et la liaison avec la console professeur.</p>
             </div>
             <div class="tagline">
@@ -103,7 +124,7 @@
           <form id="observerForm" class="stack">
             <div class="grid-3">
               <div class="subpanel">
-                <h3>Identification</h3>
+                <h3><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="9.5" cy="7" r="3.2" stroke="currentColor" stroke-width="1.9"/><path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M16 3.3a3.2 3.2 0 0 1 0 6.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span>Identification</h3>
                 <label for="classeSelect">Classe</label>
                 <select id="classeSelect" required><option value="">Chargement des classes...</option></select>
                 <label for="runnerSelect" style="margin-top:12px">Coureur</label>
@@ -114,7 +135,7 @@
               </div>
 
               <div class="subpanel">
-                <h3>Projet course</h3>
+                <h3><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="16" cy="4.5" r="2.2" stroke="currentColor" stroke-width="1.9"/><path d="m12 8 3 2 2.4 1.3M10 21l2.2-5.6L9.5 13 7 16.5M14.8 10.2 13 14l3 2.5 1.5 4.5M8.8 10.5l3.2-2.5 2.5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Projet course</h3>
                 <label for="vmaInput">VMA</label>
                 <input id="vmaInput" type="number" min="6" max="22" step="0.5" placeholder="Ex. 12" required>
                 <div class="grid-2" style="margin-top:12px">
@@ -126,7 +147,7 @@
               </div>
 
               <div class="subpanel">
-                <h3>Projet lancers</h3>
+                <h3><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.4" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>Projet lancers</h3>
                 <label>Projet lancer 1</label>
                 <input id="projectThrow1" type="hidden" value="2">
                 <div class="choice-group" data-target="projectThrow1">
@@ -163,14 +184,14 @@
 
             <div class="tour-grid">
               <div class="tour-card">
-                <h4>Tour 1 + lancer 1</h4>
-                <label for="lap1Min">Temps tour 1</label>
+                <h4><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tour 1 + lancer 1</h4>
+                <label for="lap1Min"><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="7" stroke="currentColor" stroke-width="1.9"/><path d="M12 13V9.5M9 2h6M15.8 5.2l1.5-1.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps au passage tour 1</label>
                 <div class="time-row">
                   <input id="lap1Min" type="number" min="0" max="20" placeholder="Min">
                   <span>:</span>
                   <input id="lap1Sec" type="number" min="0" max="59" placeholder="Sec">
                 </div>
-                <label>Résultat lancer 1</label><p class="tiny">Touchez la zone atteinte ou pénalité.</p>
+                <label><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.4" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>Résultat lancer 1</label><p class="tiny">Saisis le temps affiché au chrono principal, puis touche la zone atteinte ou pénalité.</p>
                 <input id="actualThrow1" type="hidden" value="0">
                 <div class="choice-group" data-target="actualThrow1">
                   <button type="button" class="choice-btn active" data-value="0">Pénalité</button>
@@ -181,14 +202,15 @@
                 </div>
               </div>
               <div class="tour-card">
-                <h4>Tour 2 + lancer 2</h4>
-                <label for="lap2Min">Temps tour 2</label>
+                <h4><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tour 2 + lancer 2</h4>
+                <label for="lap2Min"><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="7" stroke="currentColor" stroke-width="1.9"/><path d="M12 13V9.5M9 2h6M15.8 5.2l1.5-1.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps au passage tour 2</label>
                 <div class="time-row">
                   <input id="lap2Min" type="number" min="0" max="20" placeholder="Min">
                   <span>:</span>
                   <input id="lap2Sec" type="number" min="0" max="59" placeholder="Sec">
                 </div>
-                <label style="margin-top:12px">Résultat lancer 2</label><p class="tiny">Touchez la zone atteinte ou pénalité.</p>
+                <p id="lap2ComputedHint" class="tiny" style="margin:8px 0 0"><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps du tour 2 : --:--</p>
+                <label style="margin-top:12px"><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.4" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>Résultat lancer 2</label><p class="tiny">Saisis le temps cumulé affiché au chrono principal, puis touche la zone atteinte ou pénalité.</p>
                 <input id="actualThrow2" type="hidden" value="0">
                 <div class="choice-group" data-target="actualThrow2">
                   <button type="button" class="choice-btn active" data-value="0">Pénalité</button>
@@ -199,14 +221,15 @@
                 </div>
               </div>
               <div class="tour-card">
-                <h4>Tour 3 + lancer 3</h4>
-                <label for="lap3Min">Temps tour 3</label>
+                <h4><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tour 3 + lancer 3</h4>
+                <label for="lap3Min"><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="7" stroke="currentColor" stroke-width="1.9"/><path d="M12 13V9.5M9 2h6M15.8 5.2l1.5-1.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps au passage tour 3</label>
                 <div class="time-row">
                   <input id="lap3Min" type="number" min="0" max="20" placeholder="Min">
                   <span>:</span>
                   <input id="lap3Sec" type="number" min="0" max="59" placeholder="Sec">
                 </div>
-                <label style="margin-top:12px">Résultat lancer 3</label><p class="tiny">Touchez la zone atteinte ou pénalité.</p>
+                <p id="lap3ComputedHint" class="tiny" style="margin:8px 0 0"><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps du tour 3 : --:--</p>
+                <label style="margin-top:12px"><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.4" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>Résultat lancer 3</label><p class="tiny">Saisis le temps cumulé affiché au chrono principal, puis touche la zone atteinte ou pénalité.</p>
                 <input id="actualThrow3" type="hidden" value="0">
                 <div class="choice-group" data-target="actualThrow3">
                   <button type="button" class="choice-btn active" data-value="0">Pénalité</button>
@@ -248,7 +271,7 @@
           <div class="stack">
             <div class="panel">
               <div class="section-title">
-                <h2>Console professeur</h2>
+                <h2><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M3 7.5 12 3l9 4.5-9 4.5L3 7.5Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M7 10.5V15c0 1.8 2.2 3.5 5 3.5s5-1.7 5-3.5v-4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M21 9v5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span>Console professeur</h2>
                 <span id="lessonStatus" class="pill closed">Aucune séance active</span>
               </div>
               <div class="row-actions" style="margin-bottom:12px">
@@ -264,7 +287,7 @@
             </div>
 
             <div class="panel">
-              <div class="section-title"><h3>Classes Pronote</h3><button id="refreshClassesBtn" class="btn-ghost" type="button">Actualiser</button></div>
+              <div class="section-title"><h3><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V9l7-4 7 4v12M9 21v-5h6v5M9 11h.01M15 11h.01" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Classes Pronote</h3><button id="refreshClassesBtn" class="btn-ghost" type="button">Actualiser</button></div>
               <div class="grid-2">
                 <div><label for="newClassNameInput">Nom de la classe</label><input id="newClassNameInput" type="text" placeholder="Ex. 4A"></div>
                 <div><label for="classCsvInput">Fichier CSV Pronote</label><input id="classCsvInput" type="file" accept=".csv,.txt"></div>
@@ -279,7 +302,7 @@
             <div class="panel">
               <div class="section-title">
                 <div>
-                  <h3>Résultats de la séance</h3>
+                  <h3><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h13M8 12h13M8 18h13" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="4" cy="6" r="1.2" fill="currentColor"/><circle cx="4" cy="12" r="1.2" fill="currentColor"/><circle cx="4" cy="18" r="1.2" fill="currentColor"/></svg></span>Résultats de la séance</h3>
                   <p class="note">Les résultats envoyés depuis la vue observateur apparaissent ici en direct.</p>
                 </div>
               </div>
@@ -296,7 +319,7 @@
             </div>
 
             <div id="historyPanel" class="panel hidden">
-              <div class="section-title"><h3>Historique des séances</h3><button id="closeHistoryBtn" class="btn-ghost" type="button">Fermer</button></div>
+              <div class="section-title"><h3><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 2.6-6.3M3 4v5h5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Historique des séances</h3><button id="closeHistoryBtn" class="btn-ghost" type="button">Fermer</button></div>
               <div class="table-wrap">
                 <table>
                   <thead><tr><th>Nom</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead>
@@ -308,7 +331,7 @@
         </div>
       </section>
 
-      <p class="footer-note">V2 corrigée : interface observateur complète, trois temps actifs, trois lancers actifs, synchro prof / élève revue.</p>
+      <p class="footer-note"></p>
     </main>
   </div>
 
@@ -365,6 +388,8 @@
     const actualTotalDisplay = document.getElementById('actualTotalDisplay');
     const throwSummaryDisplay = document.getElementById('throwSummaryDisplay');
     const projectSummaryDisplay = document.getElementById('projectSummaryDisplay');
+    const lap2ComputedHint = document.getElementById('lap2ComputedHint');
+    const lap3ComputedHint = document.getElementById('lap3ComputedHint');
     const throwScorePreview = document.getElementById('throwScorePreview');
     const timeScorePreview = document.getElementById('timeScorePreview');
     const projectScorePreview = document.getElementById('projectScorePreview');
@@ -605,12 +630,16 @@
     }
 
     function getLapValues() {
-      return lapInputs.map(({ min, sec }) => {
+      const cumulativeTimes = lapInputs.map(({ min, sec }) => {
         const m = parseInt(min.value, 10);
         const s = parseInt(sec.value, 10);
         if (Number.isNaN(m) || Number.isNaN(s) || m < 0 || s < 0 || s > 59) return null;
         return m * 60 + s;
       });
+      if (cumulativeTimes.some(v => !Number.isFinite(v))) return [null, null, null];
+      const [t1, t2, t3] = cumulativeTimes;
+      if (t2 < t1 || t3 < t2) return [null, null, null];
+      return [t1, t2 - t1, t3 - t2];
     }
     function getProjectThrows() { return [projectThrow1, projectThrow2, projectThrow3].map(el => parseInt(el.value, 10)); }
     function getActualThrows() { return [actualThrow1, actualThrow2, actualThrow3].map(el => parseInt(el.value, 10)); }
@@ -630,12 +659,16 @@
     }
 
     function getLapValues() {
-      return lapInputs.map(({ min, sec }) => {
+      const cumulativeTimes = lapInputs.map(({ min, sec }) => {
         const m = parseInt(min.value, 10);
         const s = parseInt(sec.value, 10);
         if (Number.isNaN(m) || Number.isNaN(s) || m < 0 || s < 0 || s > 59) return null;
         return m * 60 + s;
       });
+      if (cumulativeTimes.some(v => !Number.isFinite(v))) return [null, null, null];
+      const [t1, t2, t3] = cumulativeTimes;
+      if (t2 < t1 || t3 < t2) return [null, null, null];
+      return [t1, t2 - t1, t3 - t2];
     }
     function getProjectThrows() { return [projectThrow1, projectThrow2, projectThrow3].map(el => parseInt(el.value, 10)); }
     function getActualThrows() { return [actualThrow1, actualThrow2, actualThrow3].map(el => parseInt(el.value, 10)); }
@@ -666,7 +699,20 @@
       targetTotalDisplay.textContent = mmss(summary.targetTotal);
       actualTotalDisplay.textContent = mmss(summary.totalActual);
       throwSummaryDisplay.textContent = summary.actualThrows.map(z => z === 0 ? 'P' : `Z${z}`).join(' / ');
-      projectSummaryDisplay.textContent = `${summary.exactThrowMatches}/3 lancers respectés • ${summary.paceMatches}/3 tours à ±5 s`;
+      projectSummaryDisplay.textContent = summary.cumulativeValid === false
+        ? 'Chrono incohérent : les passages doivent être croissants.'
+        : `${summary.exactThrowMatches}/3 lancers respectés • ${summary.paceMatches}/3 tours à ±5 s`;
+
+      const [t1, t2, t3] = summary.cumulativeTimes || [];
+      if (lap2ComputedHint) {
+        const lap2 = Number.isFinite(t1) && Number.isFinite(t2) && t2 >= t1 ? t2 - t1 : null;
+        lap2ComputedHint.textContent = `<span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps du tour 2 : ${mmss(lap2)}`;
+      }
+      if (lap3ComputedHint) {
+        const lap3 = Number.isFinite(t2) && Number.isFinite(t3) && t3 >= t2 ? t3 - t2 : null;
+        lap3ComputedHint.textContent = `<span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps du tour 3 : ${mmss(lap3)}`;
+      }
+
       throwScorePreview.textContent = Number(summary.throwScore || 0).toFixed(1);
       timeScorePreview.textContent = Number(summary.timeScore || 0).toFixed(1);
       projectScorePreview.textContent = Number(summary.projectScore || 0).toFixed(2);
@@ -679,11 +725,18 @@
       const sex = inferSexFromStudent(runner);
       const targetLap = vmaToLapSeconds(vma);
       const targetTotal = targetLap ? targetLap * 3 : null;
+      const cumulativeTimes = lapInputs.map(({ min, sec }) => {
+        const m = parseInt(min.value, 10);
+        const s = parseInt(sec.value, 10);
+        if (Number.isNaN(m) || Number.isNaN(s) || m < 0 || s < 0 || s > 59) return null;
+        return m * 60 + s;
+      });
       const lapValues = getLapValues();
       const actualThrows = getActualThrows();
       const projectThrows = getProjectThrows();
       const lapsComplete = lapValues.every(v => Number.isFinite(v) && v >= 0);
-      const totalActual = lapsComplete ? lapValues.reduce((a, b) => a + b, 0) : null;
+      const cumulativeValid = cumulativeTimes.every(v => Number.isFinite(v) && v >= 0) && cumulativeTimes[1] >= cumulativeTimes[0] && cumulativeTimes[2] >= cumulativeTimes[1];
+      const totalActual = lapsComplete && cumulativeValid ? lapValues.reduce((a, b) => a + b, 0) : null;
 
       const throwValues = actualThrows.map(z => throwPointsForZone(z, sex));
       const throwScore = totalActual !== null ? round2(throwValues.reduce((a, b) => a + b, 0) / 3) : 0;
@@ -700,9 +753,9 @@
       const subtotal14 = totalActual !== null ? round2(throwScore + timeScore + projectScore) : 0;
 
       const summary = {
-        sex, vma, targetLap, targetTotal, lapValues, totalActual, actualThrows, projectThrows,
+        sex, vma, targetLap, targetTotal, lapValues, cumulativeTimes, totalActual, actualThrows, projectThrows,
         exactThrowMatches, paceMatches, throwScore, timeScore, projectScore, subtotal14,
-        timeScoreBase, throwValues
+        timeScoreBase, throwValues, cumulativeValid
       };
       updatePreview(summary);
       return summary;
@@ -1119,7 +1172,7 @@
           <p class="small">Séance : ${escapePrint(lessonName)}</p>
           <div class="grid">
             <div class="box">
-              <h3>Identification</h3>
+              <h3><span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="9.5" cy="7" r="3.2" stroke="currentColor" stroke-width="1.9"/><path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M16 3.3a3.2 3.2 0 0 1 0 6.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span>Identification</h3>
               <div class="row"><span>Classe</span><strong>${escapePrint(item.classLabel || '')}</strong></div>
               <div class="row"><span>Élève</span><strong>${escapePrint(item.runnerName || '')}</strong></div>
               <div class="row"><span>Observateur</span><strong>${escapePrint(item.observerName || '')}</strong></div>
