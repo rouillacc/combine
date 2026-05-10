@@ -706,11 +706,11 @@
       const [t1, t2, t3] = summary.cumulativeTimes || [];
       if (lap2ComputedHint) {
         const lap2 = Number.isFinite(t1) && Number.isFinite(t2) && t2 >= t1 ? t2 - t1 : null;
-        lap2ComputedHint.textContent = `<span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps du tour 2 : ${mmss(lap2)}`;
+        lap2ComputedHint.innerHTML = `<span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps du tour 2 : ${mmss(lap2)}`;
       }
       if (lap3ComputedHint) {
         const lap3 = Number.isFinite(t2) && Number.isFinite(t3) && t3 >= t2 ? t3 - t2 : null;
-        lap3ComputedHint.textContent = `<span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps du tour 3 : ${mmss(lap3)}`;
+        lap3ComputedHint.innerHTML = `<span class="svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M5 5h10l-1.8 3L15 11H5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Temps du tour 3 : ${mmss(lap3)}`;
       }
 
       throwScorePreview.textContent = Number(summary.throwScore || 0).toFixed(1);
